@@ -111,7 +111,19 @@ public class Translate {
 
     }
 
-    static void translate(final BufferedReader reader, final BufferedReader readerDir, final BufferedWriter writer) throws IOException {
+    /**
+     * Given the buffers for:
+     * - input buffer
+     * - buffer with dictionary description
+     * - output buffer
+     * translates text from input file using the given dictionary to the output file
+     *
+     * @param reader    described above
+     * @param readerDir described above
+     * @param writer    described above
+     * @throws IOException if such error occurs
+     */
+    public static void translate(final BufferedReader reader, final BufferedReader readerDir, final BufferedWriter writer) throws IOException {
         parseDictionary(readerDir);
         tree.translate(new WordReader(reader), writer);
     }
@@ -120,6 +132,15 @@ public class Translate {
         return Files.newBufferedReader(Paths.get(file), StandardCharsets.UTF_8);
     }
 
+    /**
+     * Given the files for:
+     * - input file
+     * - file with dictionary description
+     * - output file
+     * translates text from input file using the given dictionary to the output file
+     *
+     * @param args described above
+     */
     public static void main(String[] args) {
         if (args == null || args.length != 3 || Arrays.stream(args).anyMatch(Objects::isNull)) {
             System.err.println("Incorrect arguments");
