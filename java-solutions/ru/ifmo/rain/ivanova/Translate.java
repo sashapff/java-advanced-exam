@@ -3,6 +3,7 @@ package ru.ifmo.rain.ivanova;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -16,11 +17,15 @@ public class Translate {
         Optional<String> translation = Optional.empty();
     }
 
+    private static String[] getWords(final String line) {
+        return line.toLowerCase().split(" ");
+    }
+
     private static class Tree {
         final Node root = new Node();
 
         void add(final String expression, final String translation) {
-            final String[] words = expression.toLowerCase().split(" ");
+            final String[] words = getWords(expression);
             Node current = root;
             for (String word : words) {
                 if (current.map.containsKey(word)) {
@@ -86,7 +91,7 @@ public class Translate {
         private void update() throws IOException {
             String line;
             while (queue.isEmpty() && (line = reader.readLine()) != null) {
-                queue.addAll(Arrays.asList(line.toLowerCase().split(" ")));
+                queue.addAll(Arrays.asList(getWords(line)));
             }
         }
 
@@ -112,7 +117,7 @@ public class Translate {
     }
 
     private static BufferedReader getReader(final String file) throws IOException {
-        return Files.newBufferedReader(Paths.get(file));
+        return Files.newBufferedReader(Paths.get(file), StandardCharsets.UTF_8);
     }
 
     public static void main(String[] args) {
@@ -124,7 +129,7 @@ public class Translate {
         try (
                 final BufferedReader reader = getReader(args[0]);
                 final BufferedReader readerDir = getReader(args[1]);
-                final BufferedWriter writer = Files.newBufferedWriter(Paths.get(args[2]))
+                final BufferedWriter writer = Files.newBufferedWriter(Paths.get(args[2]), StandardCharsets.UTF_8)
         ) {
             translate(reader, readerDir, writer);
         } catch (IOException e) {
