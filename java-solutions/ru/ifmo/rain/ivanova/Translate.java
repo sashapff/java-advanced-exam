@@ -83,11 +83,15 @@ public class Translate {
             this.reader = reader;
         }
 
-        String nextWord() throws IOException {
+        private void update() throws IOException {
             String line;
             while (queue.isEmpty() && (line = reader.readLine()) != null) {
                 queue.addAll(Arrays.asList(line.toLowerCase().split(" ")));
             }
+        }
+
+        String nextWord() throws IOException {
+            update();
             return queue.pollFirst();
         }
 
@@ -96,10 +100,7 @@ public class Translate {
         }
 
         boolean hasNext() throws IOException {
-            String line;
-            while (queue.isEmpty() && (line = reader.readLine()) != null) {
-                queue.addAll(Arrays.asList(line.toLowerCase().split(" ")));
-            }
+            update();
             return !queue.isEmpty();
         }
 
@@ -110,6 +111,10 @@ public class Translate {
         tree.translate(new WordReader(reader), writer);
     }
 
+    private static BufferedReader getReader(final String file) throws IOException {
+        return Files.newBufferedReader(Paths.get(file));
+    }
+
     public static void main(String[] args) {
         if (args == null || args.length != 3 || Arrays.stream(args).anyMatch(Objects::isNull)) {
             System.err.println("Incorrect arguments");
@@ -117,8 +122,8 @@ public class Translate {
             return;
         }
         try (
-                final BufferedReader reader = Files.newBufferedReader(Paths.get(args[0]));
-                final BufferedReader readerDir = Files.newBufferedReader(Paths.get(args[1]));
+                final BufferedReader reader = getReader(args[0]);
+                final BufferedReader readerDir = getReader(args[1]);
                 final BufferedWriter writer = Files.newBufferedWriter(Paths.get(args[2]))
         ) {
             translate(reader, readerDir, writer);
